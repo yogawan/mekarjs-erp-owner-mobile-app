@@ -1,35 +1,62 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from "expo-router";
+import React from "react";
+import {
+  TrendingUp,
+  UsersRound,
+  Sparkles,
+  UserRound,
+} from "lucide-react-native";
+import { HapticTab } from "@/components/haptic-tab";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
+const TabLayout = () => {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Keuangan",
+          tabBarIcon: ({ color }) => <TrendingUp size={20} color={color} />,
         }}
       />
+
       <Tabs.Screen
-        name="explore"
+        name="branch"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Pengelola Cabang",
+          tabBarIcon: ({ color }) => <UsersRound size={20} color={color} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Tanya AI",
+          tabBarIcon: ({ color }) => (
+            // Anda juga bisa mengganti ini dengan icon <Bot /> jika ingin lebih spesifik AI
+            <Sparkles size={20} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profil",
+          tabBarIcon: ({ color }) => <UserRound size={20} color={color} />,
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;

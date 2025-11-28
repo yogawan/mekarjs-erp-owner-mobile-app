@@ -6,7 +6,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Link } from "expo-router";
 
-const FinancePage = () => {
+const ChatPage = () => {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -86,7 +86,7 @@ const FinancePage = () => {
   );
 };
 
-export default FinancePage;
+export default ChatPage;
 
 const styles = StyleSheet.create({
   titleContainer: {
