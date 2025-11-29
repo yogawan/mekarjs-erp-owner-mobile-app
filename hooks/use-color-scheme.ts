@@ -1,3 +1,5 @@
-export function useColorScheme() {
-  return "light"; // Paksa Light Mode
-}
+const useColorScheme = () => {
+  return "light";
+};
+
+export default useColorScheme;

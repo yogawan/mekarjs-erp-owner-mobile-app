@@ -1,14 +1,14 @@
-import { Tabs } from "expo-router";
-import React from "react";
-import {
-  TrendingUp,
-  UsersRound,
-  Sparkles,
-  UserRound,
-} from "lucide-react-native";
 import { HapticTab } from "@/components/haptic-tab";
 import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import useColorScheme from "@/hooks/use-color-scheme";
+import { Tabs } from "expo-router";
+import {
+  Sparkles,
+  TrendingUp,
+  UserRound,
+  UsersRound,
+} from "lucide-react-native";
+import React from "react";
 
 const TabLayout = () => {
   const colorScheme = useColorScheme();

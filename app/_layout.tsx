@@ -9,7 +9,7 @@ import "react-native-reanimated";
 // 1. Import ini wajib ada
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import useColorScheme from "@/hooks/use-color-scheme";
 
 export const unstable_settings = {
   anchor: "(auth)",

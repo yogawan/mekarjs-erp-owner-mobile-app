@@ -1,37 +1,38 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-// ✅ Menggunakan SafeAreaView dari context (Best Practice)
+import { Colors } from "@/constants/theme";
 import axios from "axios";
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    useColorScheme,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const RegisterPage = () => {
   const router = useRouter();
 
-  // State untuk form input
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // State untuk loading
   const [loading, setLoading] = useState(false);
 
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+
   const API_URL =
-    "https://corequarry-core-service.vercel.app/api/owner/account/register";
+    "https://mekarjs-erp-core-service.yogawanadityapratama.com/api/owner/account/register";
 
   const handleRegister = async () => {
-    // 1. Validasi Sederhana
     if (!nama || !email || !password) {
       Alert.alert("Peringatan", "Mohon lengkapi semua kolom pendaftaran.");
       return;
@@ -40,7 +41,6 @@ const RegisterPage = () => {
     try {
       setLoading(true);
 
-      // 2. Hit API
       const response = await axios.post(API_URL, {
         nama: nama,
         email: email,
@@ -49,12 +49,10 @@ const RegisterPage = () => {
 
       console.log("Register Success:", response.data);
 
-      // 3. Sukses: Beritahu user & arahkan ke Login
       Alert.alert("Berhasil", "Akun Owner berhasil dibuat. Silakan Login.", [
-        { text: "OK", onPress: () => router.replace("/(auth)/login") }, // Asumsi path login
+        { text: "OK", onPress: () => router.replace("/(auth)/login") },
       ]);
     } catch (error: any) {
-      // 4. Error Handling
       console.error("Register Error:", error.response?.data);
       const errorMessage =
         error.response?.data?.message || "Gagal mendaftar. Coba lagi nanti.";
@@ -64,124 +62,169 @@ const RegisterPage = () => {
     }
   };
 
+  const styles = createStyles(theme);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#EEEEEE" }}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        style={styles.keyboardView}
       >
         <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
-            padding: 20,
-          }}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header Section */}
-          <View style={{ marginBottom: 30 }}>
-            <Text style={{ fontSize: 28, fontWeight: "bold", color: "#333" }}>
-              Daftar Baru
-            </Text>
-            <Text style={{ fontSize: 16, color: "#666", marginTop: 5 }}>
-              Buat akun Owner CoreQuarry
-            </Text>
+          <View style={styles.header}>
+            <Text style={styles.title}>Daftar Baru</Text>
+            <Text style={styles.subtitle}>Buat akun Owner CoreQuarry</Text>
           </View>
 
-          {/* Form Input Section */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ marginBottom: 8, fontWeight: "600", color: "#444" }}>
-              Nama Lengkap
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Contoh: Alif Arya Kusuma"
-              value={nama}
-              onChangeText={setNama}
-            />
-          </View>
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Nama Lengkap</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Alif Arya Kusuma"
+                placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
+                value={nama}
+                onChangeText={setNama}
+              />
+            </View>
 
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ marginBottom: 8, fontWeight: "600", color: "#444" }}>
-              Email
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Contoh: email@domain.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="email@domain.com"
+                placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
 
-          <View style={{ marginBottom: 30 }}>
-            <Text style={{ marginBottom: 8, fontWeight: "600", color: "#444" }}>
-              Password
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Masukkan password"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-          </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Masukkan password"
+                placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+            </View>
 
-          {/* Action Buttons */}
-          <TouchableOpacity
-            style={styles.buttonPrimary}
-            onPress={handleRegister}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 16 }}
-              >
-                Daftar Sekarang
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleRegister}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              {loading ? (
+                <ActivityIndicator color="#171717" />
+              ) : (
+                <Text style={styles.buttonText}>Daftar Sekarang</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.linkContainer}
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.linkText}>
+                Sudah punya akun?{" "}
+                <Text style={styles.linkTextBold}>Login di sini</Text>
               </Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{ marginTop: 20, alignItems: "center" }}
-            onPress={() => router.back()} // Kembali ke halaman sebelumnya (biasanya Login)
-          >
-            <Text style={{ color: "#FFBB00", fontSize: 14 }}>
-              Sudah punya akun?{" "}
-              <Text style={{ fontWeight: "bold" }}>Login di sini</Text>
-            </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-// Styling terpisah agar lebih rapi
-const styles = {
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 14,
-    borderRadius: 10,
-    backgroundColor: "#f9f9f9",
-    fontSize: 16,
-  },
-  buttonPrimary: {
-    backgroundColor: "#FFBB00", // Warna biru standar (bisa diganti sesuai brand)
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center" as const, // Type casting untuk TypeScript
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-};
+const createStyles = (theme: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: 24,
+      justifyContent: "center",
+    },
+    header: {
+      marginBottom: 48,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: theme.text,
+      letterSpacing: -0.5,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: theme.text,
+      marginTop: 8,
+      opacity: 0.7,
+    },
+    form: {
+      gap: 20,
+    },
+    inputGroup: {
+      gap: 8,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: theme.text,
+      marginBottom: 4,
+    },
+    input: {
+      borderWidth: 1.5,
+      borderColor: theme.border,
+      padding: 16,
+      borderRadius: 12,
+      backgroundColor: theme.background,
+      fontSize: 16,
+      color: theme.text,
+    },
+    button: {
+      backgroundColor: theme.primary,
+      padding: 18,
+      borderRadius: 12,
+      alignItems: "center",
+      marginTop: 12,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      color: "#171717",
+      fontWeight: "700",
+      fontSize: 16,
+    },
+    linkContainer: {
+      marginTop: 8,
+      alignItems: "center",
+      paddingVertical: 8,
+    },
+    linkText: {
+      color: theme.text,
+      fontSize: 14,
+      opacity: 0.8,
+    },
+    linkTextBold: {
+      fontWeight: "700",
+      color: theme.primary,
+    },
+  });
 
 export default RegisterPage;

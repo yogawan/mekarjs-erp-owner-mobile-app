@@ -1,17 +1,20 @@
+import { Colors } from "@/constants/theme";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    useColorScheme,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -22,9 +25,11 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Pastikan URL ini benar & bisa diakses device (bukan localhost laptop)
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+
   const API_URL =
-    "https://corequarry-core-service.vercel.app/api/owner/account/login";
+    "https://mekarjs-erp-core-service.yogawanadityapratama.com//api/owner/account/login";
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -42,12 +47,10 @@ const LoginPage = () => {
 
       const token = response.data.token;
 
-      // Simpan token ke SecureStore
       await SecureStore.setItemAsync("token", token);
 
       console.log("Login Success:", token);
 
-      // Redirect ke halaman home/dashboard
       router.replace("/(tabs)");
     } catch (error: any) {
       console.log("Login Error:", error.response?.data || error.message);
@@ -60,97 +63,158 @@ const LoginPage = () => {
     }
   };
 
+  const styles = createStyles(theme);
+
   return (
-    // ✅ SafeAreaView dari context akan otomatis handle notch/status bar
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#EEEEEE" }}>
-<StatusBar style="light" backgroundColor="black" />
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        // Untuk Android, behavior 'height' biasanya lebih stabil daripada undefined
+        style={styles.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          // ✅ contentContainerStyle flexGrow: 1 agar konten bisa di-center vertikal
-          // jika layarnya panjang, tapi tetap bisa discroll kalau keyboard muncul
-          contentContainerStyle={{
-            flexGrow: 1,
-            padding: 20,
-            justifyContent: "center",
-          }}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={{ marginBottom: 40 }}>
-            <Text style={{ fontSize: 28, fontWeight: "bold", color: "#333" }}>
-              CoreQuarry
-            </Text>
-            <Text style={{ fontSize: 16, color: "#666", marginTop: 5 }}>
-              Login Owner
-            </Text>
+          <View style={styles.header}>
+            <Text style={styles.title}>CoreQuarry</Text>
+            <Text style={styles.subtitle}>Login Owner</Text>
           </View>
 
-          <TextInput
-            style={{
-              borderWidth: 1,
-              borderColor: "#17171715", // Warna border lebih halus
-              padding: 15, // Padding lebih besar biar enak ditekan
-              marginTop: 20,
-              borderRadius: 12,
-              backgroundColor: "#EEEEEE",
-            }}
-            placeholder="Email Address"
-            autoCapitalize="none"
-            keyboardType="email-address" // Keyboard khusus email
-            value={email}
-            onChangeText={setEmail}
-          />
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="email@domain.com"
+                placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
 
-          <TextInput
-            style={{
-              borderWidth: 1,
-              borderColor: "#17171715",
-              padding: 15,
-              marginTop: 15,
-              borderRadius: 12,
-              backgroundColor: "#EEEEEE",
-            }}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Masukkan password"
+                placeholderTextColor={colorScheme === "dark" ? "#888" : "#999"}
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+            </View>
 
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#FFBB00",
-              padding: 16,
-              marginTop: 30,
-              borderRadius: 999,
-              alignItems: "center",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 3, // Shadow untuk Android
-            }}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
-              {loading ? "Sedang Masuk..." : "Login Sekarang"}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              {loading ? (
+                <ActivityIndicator color="#171717" />
+              ) : (
+                <Text style={styles.buttonText}>Login Sekarang</Text>
+              )}
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={{ marginTop: 20, alignItems: "center" }}
-            onPress={() => router.push("/(auth)/register")}
-          >
-            <Text style={{ color: "#FFBB00", fontSize: 14 }}>
-              Belum punya akun?{" "}
-              <Text style={{ fontWeight: "bold" }}>Daftar di sini</Text>
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.linkContainer}
+              onPress={() => router.push("/(auth)/register")}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.linkText}>
+                Belum punya akun?{" "}
+                <Text style={styles.linkTextBold}>Daftar di sini</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
+
+const createStyles = (theme: typeof Colors.light) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: 24,
+      justifyContent: "center",
+    },
+    header: {
+      marginBottom: 48,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: "700",
+      color: theme.text,
+      letterSpacing: -0.5,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: theme.text,
+      marginTop: 8,
+      opacity: 0.7,
+    },
+    form: {
+      gap: 20,
+    },
+    inputGroup: {
+      gap: 8,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: theme.text,
+      marginBottom: 4,
+    },
+    input: {
+      borderWidth: 1.5,
+      borderColor: theme.border,
+      padding: 16,
+      borderRadius: 12,
+      backgroundColor: theme.background,
+      fontSize: 16,
+      color: theme.text,
+    },
+    button: {
+      backgroundColor: theme.primary,
+      padding: 18,
+      borderRadius: 12,
+      alignItems: "center",
+      marginTop: 12,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      color: "#171717",
+      fontWeight: "700",
+      fontSize: 16,
+    },
+    linkContainer: {
+      marginTop: 8,
+      alignItems: "center",
+      paddingVertical: 8,
+    },
+    linkText: {
+      color: theme.text,
+      fontSize: 14,
+      opacity: 0.8,
+    },
+    linkTextBold: {
+      fontWeight: "700",
+      color: theme.primary,
+    },
+  });
 
 export default LoginPage;
